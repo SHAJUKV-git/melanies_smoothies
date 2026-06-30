@@ -26,11 +26,11 @@ st.write('The name on your smoothie will be: ',name_on_order)
 cnx=st.connection("snowflake")
 session=cnx.session()
 
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('SEARCH_ON'),col('FRUIT_NAME'))
+tbl_col_fruit = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'),col('SEARCH_ON'))
 
-st.dataframe(data=my_dataframe, use_container_width=True)   # to print in table form of all columns
+st.dataframe(data=tbl_col_fruit, use_container_width=True)   # to print in table form of all columns
 
-ingredients_list = st.multiselect('Choose upto 5 ingredientss:', my_dataframe, max_selections=5)    # it considers only 1st column
+ingredients_list = st.multiselect('Choose upto 5 ingredientss:', tbl_col_fruit, max_selections=5)    # it considers only 1st column
 
 if ingredients_list:
    # st.write(ingredients_list)   # to view as flattened into rows
