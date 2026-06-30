@@ -28,9 +28,12 @@ session=cnx.session()
 
 tbl_col_fruit = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'),col('SEARCH_ON'))
 
-st.dataframe(data=tbl_col_fruit, use_container_width=True)   # to print in table form of all columns
+# st.dataframe(data=tbl_col_fruit, use_container_width=True)   # to print in table form of all columns, dataframe brings all columns selected in session.table
 
-ingredients_list = st.multiselect('Choose upto 5 ingredientss:', tbl_col_fruit, max_selections=5)    # it considers only 1st column
+pd_df = tbl_col_fruit.to_pandas()                             # convert to pandas
+st.dataframe(pd_df)                                           # using pandas to print in table form of all columns, dataframe brings all columns selected in session.table
+
+ingredients_list = st.multiselect('Choose upto 5 ingredientss:', tbl_col_fruit, max_selections=5)    # multiselect and for loop considers only 1st column by default or else one need to use pandas package
 
 if ingredients_list:
    # st.write(ingredients_list)   # to view as flattened into rows
@@ -40,9 +43,15 @@ if ingredients_list:
 
    for fruit_chosen in ingredients_list:
        ingredients_string += fruit_chosen + ' '
+
+       search_on = pd_df.loc[ pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON' ].iloc[0]
+       st.write('The search value for ', fruit_chosen, ' is ', search_on, '.')
+
        st.subheader(fruit_chosen + ' Nutrition Information')
-       smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + fruit_chosen)
-       sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
+       # smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + fruit_chosen)
+     
+       fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_chosen)
+       sf_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
 
    st.write(ingredients_string)
    
